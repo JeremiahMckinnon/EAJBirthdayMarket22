@@ -1,0 +1,888 @@
+@page "/congratulations"
+@inject NavigationManager NavigationManager
+@inject PointsService PointsService
+
+<PageTitle>Congratulations!</PageTitle>
+
+<div class="page-container">
+    <!-- Celebration Effects -->
+    <div class="celebration-effects">
+        <!-- Confetti pieces -->
+        <div class="confetti confetti-1"></div>
+        <div class="confetti confetti-2"></div>
+        <div class="confetti confetti-3"></div>
+        <div class="confetti confetti-4"></div>
+        <div class="confetti confetti-5"></div>
+        <div class="confetti confetti-6"></div>
+        <div class="confetti confetti-7"></div>
+        <div class="confetti confetti-8"></div>
+        <div class="confetti confetti-9"></div>
+        <div class="confetti confetti-10"></div>
+        <div class="confetti confetti-11"></div>
+        <div class="confetti confetti-12"></div>
+        <div class="confetti confetti-13"></div>
+        <div class="confetti confetti-14"></div>
+        <div class="confetti confetti-15"></div>
+        <div class="confetti confetti-16"></div>
+        <div class="confetti confetti-17"></div>
+        <div class="confetti confetti-18"></div>
+        <div class="confetti confetti-19"></div>
+        <div class="confetti confetti-20"></div>
+
+        <!-- Party balloons -->
+        <div class="balloon balloon-1"></div>
+        <div class="balloon balloon-2"></div>
+        <div class="balloon balloon-3"></div>
+        <div class="balloon balloon-4"></div>
+        <div class="balloon balloon-5"></div>
+        <div class="balloon balloon-6"></div>
+    </div>
+
+    <div class="header-wrapper">
+        <PageHeader Title="Congratulations!" />
+    </div>
+
+    <!-- Mr. B-Day Mascot -->
+    <div class="mascot-celebration">
+        <div class="cake-character">
+            <div class="sparkle"></div>
+            <div class="sparkle"></div>
+            <div class="sparkle"></div>
+            <div class="sparkle"></div>
+
+            <div class="candles-container">
+                <div class="candle"><div class="flame"></div></div>
+                <div class="candle"><div class="flame"></div></div>
+                <div class="candle"><div class="flame"></div></div>
+            </div>
+
+            <div class="cake-top"></div>
+            <div class="cake-middle"></div>
+            <div class="cake-bottom">
+                <div class="cake-stripe"></div>
+                <div class="cake-stripe"></div>
+            </div>
+            <div class="cake-base"></div>
+
+            <div class="face">
+                <div class="eyes">
+                    <div class="eyebrow left"></div>
+                    <div class="eyebrow right"></div>
+                    <div class="eye">
+                        <div class="pupil"><div class="highlight"></div></div>
+                    </div>
+                    <div class="eye">
+                        <div class="pupil"><div class="highlight"></div></div>
+                    </div>
+                </div>
+                <div class="mouth"><div class="tongue"></div></div>
+            </div>
+
+            <div class="arm left">
+                <div class="hand left"><div class="thumb left"></div></div>
+            </div>
+            <div class="arm right">
+                <div class="hand right"><div class="thumb right"></div></div>
+            </div>
+
+            <div class="legs-container">
+                <div class="leg left"><div class="shoe"></div></div>
+                <div class="leg right"><div class="shoe"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="congratulations-content">
+        <h1 class="congrats-title">Congratulations—we're excited to celebrate YOU!</h1>
+
+        <div class="key-message">
+            <p class="important-message">Always remember, my dear friend…</p>
+            <p class="birthday-matters">YOUR BIRTHDAY MATTERS.</p>
+        </div>
+
+        <div class="order-info">
+            <p>Your order has been received and is on the way.</p>
+            <p>Please contact your agency for further instructions.</p>
+        </div>
+
+        <div class="closing-message">
+            <p>I wish you a very happy and fun birthday.</p>
+            <p class="signature">— Mr. B-Day</p>
+        </div>
+
+        <div class="points-summary">
+            <div class="summary-item">
+                <span class="summary-label">Points Used:</span>
+                <span class="summary-value">@PointsService.PointsUsed</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Points Remaining:</span>
+                <span class="summary-value">@PointsService.CurrentPoints</span>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(AudioFile))
+        {
+            <audio autoplay>
+                <source src="@AudioFile" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+        }
+
+        <button class="start-over-button" @onclick="StartOver">
+            Start Over
+        </button>
+    </div>
+</div>
+
+@code {
+    private string AudioFile = "/audio/congratulations_page.mp3";
+
+    private void StartOver()
+    {
+        PointsService.ResetPoints();
+        NavigationManager.NavigateTo("/");
+    }
+}
+
+<style>
+    .page-container {
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    .header-wrapper {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .congratulations-content {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        margin: 30px auto;
+        max-width: 700px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .congrats-title {
+        font-family: 'Pacifico', cursive;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 2.5rem;
+        margin-bottom: 30px;
+        animation: titleAnimation 2s ease-in-out;
+    }
+
+    @@keyframes titleAnimation {
+        0% {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .key-message {
+        background: linear-gradient(135deg, rgba(240, 147, 251, 0.1) 0%, rgba(245, 87, 108, 0.1) 100%);
+        border-radius: 15px;
+        padding: 25px;
+        margin: 30px 0;
+    }
+
+    .important-message {
+        font-family: 'Poppins', sans-serif;
+        color: #667eea;
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+
+    .birthday-matters {
+        font-family: 'Pacifico', cursive;
+        font-size: 2rem;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 0;
+        animation: pulse 2s infinite;
+    }
+
+    @@keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+    .order-info {
+        background: #f8f9fa;
+        border-left: 4px solid #667eea;
+        padding: 20px;
+        margin: 30px 0;
+        text-align: left;
+        border-radius: 8px;
+    }
+
+    .order-info p {
+        font-family: 'Poppins', sans-serif;
+        color: #333;
+        margin: 10px 0;
+        font-size: 1.1rem;
+    }
+
+    .closing-message {
+        margin: 30px 0;
+    }
+
+    .closing-message p {
+        font-family: 'Poppins', sans-serif;
+        color: #555;
+        font-size: 1.2rem;
+        margin: 10px 0;
+    }
+
+    .signature {
+        font-family: 'Pacifico', cursive;
+        color: #667eea;
+        font-size: 1.5rem;
+        margin-top: 20px;
+    }
+
+    .points-summary {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        margin: 30px 0;
+        padding: 20px;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+        border-radius: 10px;
+    }
+
+    .summary-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .summary-label {
+        font-family: 'Poppins', sans-serif;
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+    }
+
+    .summary-value {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 1.8rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .start-over-button {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        border: none;
+        padding: 18px 50px;
+        font-size: 1.3rem;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        border-radius: 50px;
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4);
+        transition: all 0.3s ease;
+        margin-top: 30px;
+    }
+
+    .start-over-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(17, 153, 142, 0.5);
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Celebration Effects Container */
+    .celebration-effects {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 1000;
+    }
+
+    /* Confetti Base Styles */
+    .confetti {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 12px;
+        height: 12px;
+        animation: confettiBurst 3s ease-out forwards;
+        will-change: transform, opacity;
+    }
+
+    /* Confetti Colors and Positions */
+    .confetti-1 { background: #f093fb; --end-x: -300px; --end-y: -400px; --rotation: 720deg; animation-delay: 0s; }
+    .confetti-2 { background: #f5576c; --end-x: 250px; --end-y: -350px; --rotation: -540deg; animation-delay: 0.05s; width: 8px; height: 16px; }
+    .confetti-3 { background: #667eea; --end-x: -200px; --end-y: 300px; --rotation: 450deg; animation-delay: 0.1s; }
+    .confetti-4 { background: #38ef7d; --end-x: 350px; --end-y: 200px; --rotation: -630deg; animation-delay: 0.15s; width: 10px; height: 14px; }
+    .confetti-5 { background: #ffd700; --end-x: -400px; --end-y: -100px; --rotation: 810deg; animation-delay: 0.2s; }
+    .confetti-6 { background: #ff6b6b; --end-x: 150px; --end-y: -450px; --rotation: -720deg; animation-delay: 0.25s; width: 14px; height: 8px; }
+    .confetti-7 { background: #4ecdc4; --end-x: -350px; --end-y: 150px; --rotation: 540deg; animation-delay: 0.3s; }
+    .confetti-8 { background: #a855f7; --end-x: 400px; --end-y: -200px; --rotation: -450deg; animation-delay: 0.35s; width: 8px; height: 12px; }
+    .confetti-9 { background: #f093fb; --end-x: -150px; --end-y: -500px; --rotation: 630deg; animation-delay: 0.4s; }
+    .confetti-10 { background: #ffd700; --end-x: 300px; --end-y: 350px; --rotation: -810deg; animation-delay: 0.45s; width: 12px; height: 8px; }
+    .confetti-11 { background: #38ef7d; --end-x: -450px; --end-y: 50px; --rotation: 900deg; animation-delay: 0.1s; }
+    .confetti-12 { background: #667eea; --end-x: 200px; --end-y: 400px; --rotation: -540deg; animation-delay: 0.2s; width: 10px; height: 10px; }
+    .confetti-13 { background: #ff6b6b; --end-x: -250px; --end-y: -300px; --rotation: 450deg; animation-delay: 0.3s; }
+    .confetti-14 { background: #4ecdc4; --end-x: 450px; --end-y: 100px; --rotation: -720deg; animation-delay: 0.15s; width: 14px; height: 10px; }
+    .confetti-15 { background: #a855f7; --end-x: -100px; --end-y: 450px; --rotation: 810deg; animation-delay: 0.25s; }
+    .confetti-16 { background: #f5576c; --end-x: 100px; --end-y: -380px; --rotation: -630deg; animation-delay: 0.35s; width: 8px; height: 14px; }
+    .confetti-17 { background: #ffd700; --end-x: -380px; --end-y: -250px; --rotation: 540deg; animation-delay: 0.05s; }
+    .confetti-18 { background: #38ef7d; --end-x: 280px; --end-y: -150px; --rotation: -900deg; animation-delay: 0.4s; width: 12px; height: 6px; }
+    .confetti-19 { background: #f093fb; --end-x: -200px; --end-y: 250px; --rotation: 720deg; animation-delay: 0.5s; }
+    .confetti-20 { background: #667eea; --end-x: 380px; --end-y: 280px; --rotation: -450deg; animation-delay: 0.45s; width: 6px; height: 12px; }
+
+    @@keyframes confettiBurst {
+        0% {
+            transform: translate(-50%, -50%) scale(0) rotate(0deg);
+            opacity: 0;
+        }
+        15% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1) rotate(0deg);
+        }
+        100% {
+            transform: translate(var(--end-x), var(--end-y)) scale(1) rotate(var(--rotation));
+            opacity: 0;
+        }
+    }
+
+    /* Balloon Base Styles */
+    .balloon {
+        position: absolute;
+        bottom: -150px;
+        width: 80px;
+        height: 100px;
+        border-radius: 50% 50% 50% 50%;
+        animation: balloonFloat 3.5s ease-out forwards;
+        will-change: transform, opacity;
+    }
+
+    .balloon::before {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-top: 15px solid inherit;
+    }
+
+    .balloon::after {
+        content: '';
+        position: absolute;
+        bottom: -60px;
+        left: 50%;
+        width: 2px;
+        height: 50px;
+        background: rgba(0, 0, 0, 0.3);
+        transform: translateX(-50%);
+    }
+
+    /* Balloon Colors and Positions */
+    .balloon-1 {
+        left: 10%;
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
+        --float-y: -70vh;
+        animation-delay: 0.2s;
+    }
+    .balloon-1::before { border-top-color: #ee5a5a; }
+
+    .balloon-2 {
+        left: 25%;
+        background: linear-gradient(135deg, #ffd700 0%, #ffb800 100%);
+        --float-y: -60vh;
+        animation-delay: 0.4s;
+        width: 70px;
+        height: 88px;
+    }
+    .balloon-2::before { border-top-color: #ffb800; }
+
+    .balloon-3 {
+        left: 45%;
+        background: linear-gradient(135deg, #4ecdc4 0%, #3dbdb5 100%);
+        --float-y: -75vh;
+        animation-delay: 0.1s;
+        width: 85px;
+        height: 105px;
+    }
+    .balloon-3::before { border-top-color: #3dbdb5; }
+
+    .balloon-4 {
+        left: 60%;
+        background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+        --float-y: -65vh;
+        animation-delay: 0.5s;
+    }
+    .balloon-4::before { border-top-color: #9333ea; }
+
+    .balloon-5 {
+        left: 75%;
+        background: linear-gradient(135deg, #f093fb 0%, #e879f0 100%);
+        --float-y: -72vh;
+        animation-delay: 0.3s;
+        width: 75px;
+        height: 95px;
+    }
+    .balloon-5::before { border-top-color: #e879f0; }
+
+    .balloon-6 {
+        left: 88%;
+        background: linear-gradient(135deg, #38ef7d 0%, #28d86c 100%);
+        --float-y: -68vh;
+        animation-delay: 0.6s;
+        width: 72px;
+        height: 90px;
+    }
+    .balloon-6::before { border-top-color: #28d86c; }
+
+    @@keyframes balloonFloat {
+        0% {
+            transform: translateY(0) scale(0);
+            opacity: 0;
+        }
+        20% {
+            transform: translateY(calc(var(--float-y) * 0.3)) scale(1.2);
+            opacity: 1;
+        }
+        40% {
+            transform: translateY(calc(var(--float-y) * 0.6)) scale(1) rotate(-5deg);
+        }
+        60% {
+            transform: translateY(calc(var(--float-y) * 0.85)) scale(1) rotate(5deg);
+        }
+        80% {
+            transform: translateY(var(--float-y)) scale(1) rotate(-3deg);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(var(--float-y)) scale(1) rotate(0deg);
+            opacity: 0;
+        }
+    }
+
+    /* Mr. B-Day Mascot Styles */
+    .mascot-celebration {
+        display: flex;
+        justify-content: center;
+        margin: 20px 0;
+        transform: scale(0.6);
+        transform-origin: center;
+    }
+
+    .cake-character {
+        position: relative;
+        animation: bounce 2s ease-in-out infinite;
+    }
+
+    @@keyframes bounce {
+        0%, 20%, 50%, 80%, 100% { transform: translateY(0) rotate(0deg); }
+        40% { transform: translateY(-10px) rotate(-2deg); }
+        60% { transform: translateY(-5px) rotate(2deg); }
+    }
+
+    /* Candles */
+    .candles-container {
+        position: absolute;
+        top: -35px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 20px;
+    }
+
+    .candle {
+        width: 14px;
+        height: 45px;
+        background: #40E0D0;
+        border-radius: 4px 4px 0 0;
+        position: relative;
+        animation: candleWiggle 2s ease-in-out infinite;
+        border: 3px solid #000;
+        border-bottom: none;
+    }
+
+    .candle:nth-child(1) { animation-delay: 0s; }
+    .candle:nth-child(2) { animation-delay: 0.2s; }
+    .candle:nth-child(3) { animation-delay: 0.4s; }
+
+    @@keyframes candleWiggle {
+        0%, 100% { transform: rotate(0deg); }
+        25% { transform: rotate(-3deg); }
+        75% { transform: rotate(3deg); }
+    }
+
+    .flame {
+        position: absolute;
+        top: -18px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 18px;
+        height: 24px;
+        background: #FF69B4;
+        border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+        animation: flicker 0.3s ease-in-out infinite alternate;
+        border: 2px solid #FF1493;
+    }
+
+    @@keyframes flicker {
+        0% { transform: translateX(-50%) scale(1) translateY(0); }
+        100% { transform: translateX(-50%) scale(1.1) translateY(-2px); }
+    }
+
+    /* Cake Layers */
+    .cake-top {
+        width: 200px;
+        height: 55px;
+        background: #FF69B4;
+        border-radius: 100px 100px 0 0;
+        position: relative;
+        border: 4px solid #000;
+        box-shadow: inset 0 -5px 0 rgba(0,0,0,0.1);
+    }
+
+    .cake-middle {
+        width: 200px;
+        height: 50px;
+        background: #E6B3FF;
+        position: relative;
+        border-left: 4px solid #000;
+        border-right: 4px solid #000;
+        margin-top: -4px;
+    }
+
+    .cake-bottom {
+        width: 200px;
+        height: 55px;
+        background: #FFEB99;
+        position: relative;
+        border-left: 4px solid #000;
+        border-right: 4px solid #000;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        padding: 8px 0;
+    }
+
+    .cake-stripe {
+        width: 100%;
+        height: 12px;
+        background: #00CED1;
+        border-top: 3px solid #000;
+        border-bottom: 3px solid #000;
+    }
+
+    .cake-base {
+        width: 200px;
+        height: 25px;
+        background: #FFE5B4;
+        border-radius: 0 0 20px 20px;
+        border: 4px solid #000;
+        border-top: none;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    }
+
+    /* Face */
+    .face {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10;
+    }
+
+    .eyes {
+        display: flex;
+        gap: 30px;
+        margin-bottom: 5px;
+        animation: blink 4s infinite;
+        position: relative;
+    }
+
+    @@keyframes blink {
+        0%, 49%, 51%, 100% { transform: scaleY(1); }
+        50% { transform: scaleY(0.1); }
+    }
+
+    .eyebrow {
+        position: absolute;
+        width: 32px;
+        height: 8px;
+        background: #000;
+        border-radius: 50%;
+        top: -10px;
+    }
+
+    .eyebrow.left { left: 0; }
+    .eyebrow.right { right: 0; }
+
+    .eye {
+        width: 32px;
+        height: 36px;
+        background: white;
+        border: 4px solid #000;
+        border-radius: 50%;
+        position: relative;
+    }
+
+    .pupil {
+        width: 16px;
+        height: 16px;
+        background: #000;
+        border-radius: 50%;
+        position: absolute;
+        top: 55%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        animation: lookAround 5s ease-in-out infinite;
+    }
+
+    @@keyframes lookAround {
+        0%, 100% { transform: translate(-50%, -50%); }
+        25% { transform: translate(-30%, -50%); }
+        50% { transform: translate(-50%, -40%); }
+        75% { transform: translate(-70%, -50%); }
+    }
+
+    .highlight {
+        width: 8px;
+        height: 8px;
+        background: white;
+        border-radius: 50%;
+        position: absolute;
+        top: 4px;
+        left: 4px;
+    }
+
+    .mouth {
+        width: 50px;
+        height: 30px;
+        border: 4px solid #000;
+        border-top: none;
+        border-radius: 0 0 50px 50px;
+        background: #000;
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+        animation: smile 2s ease-in-out infinite;
+    }
+
+    @@keyframes smile {
+        0%, 100% { width: 50px; height: 30px; }
+        50% { width: 55px; height: 32px; }
+    }
+
+    .tongue {
+        width: 25px;
+        height: 15px;
+        background: #FF1493;
+        border-radius: 50%;
+        position: absolute;
+        bottom: 2px;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 2px solid #C71585;
+    }
+
+    /* Arms */
+    .arm {
+        position: absolute;
+        width: 70px;
+        height: 18px;
+        background: #000;
+        border-radius: 12px;
+        top: 65px;
+    }
+
+    .arm.left {
+        left: -60px;
+        transform-origin: right center;
+        animation: waveLeft 1.5s ease-in-out infinite;
+    }
+
+    .arm.right {
+        right: -60px;
+        transform-origin: left center;
+        animation: waveRight 1.5s ease-in-out infinite;
+    }
+
+    @@keyframes waveLeft {
+        0%, 100% { transform: rotate(-20deg); }
+        50% { transform: rotate(-50deg); }
+    }
+
+    @@keyframes waveRight {
+        0%, 100% { transform: rotate(20deg); }
+        50% { transform: rotate(50deg); }
+    }
+
+    .hand {
+        position: absolute;
+        width: 35px;
+        height: 35px;
+        background: white;
+        border: 4px solid #000;
+        border-radius: 50%;
+        top: -8px;
+    }
+
+    .hand.left { left: -20px; }
+    .hand.right { right: -20px; }
+
+    .thumb {
+        position: absolute;
+        width: 16px;
+        height: 22px;
+        background: white;
+        border: 4px solid #000;
+        border-radius: 10px;
+        top: -8px;
+    }
+
+    .thumb.left {
+        left: -12px;
+        transform: rotate(-30deg);
+    }
+    .thumb.right {
+        right: -12px;
+        transform: rotate(30deg);
+    }
+
+    /* Legs */
+    .legs-container {
+        position: absolute;
+        bottom: -65px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 35px;
+    }
+
+    .leg {
+        width: 18px;
+        height: 50px;
+        background: #000;
+        border-radius: 10px;
+        position: relative;
+    }
+
+    .leg.left { animation: kickLeft 1s ease-in-out infinite; }
+    .leg.right { animation: kickRight 1s ease-in-out infinite; }
+
+    @@keyframes kickLeft {
+        0%, 100% { transform: rotate(0deg); }
+        50% { transform: rotate(-10deg); }
+    }
+
+    @@keyframes kickRight {
+        0%, 100% { transform: rotate(0deg); }
+        50% { transform: rotate(10deg); }
+    }
+
+    .shoe {
+        position: absolute;
+        bottom: -12px;
+        left: -12px;
+        width: 40px;
+        height: 20px;
+        background: white;
+        border: 4px solid #000;
+        border-radius: 20px;
+    }
+
+    /* Sparkles */
+    .sparkle {
+        position: absolute;
+        width: 12px;
+        height: 20px;
+        animation: confettiFallMascot 3s ease-in-out infinite;
+    }
+
+    .sparkle:nth-child(1) {
+        top: -25px;
+        left: -50px;
+        animation-delay: 0s;
+        background: #FF69B4;
+        transform: rotate(15deg);
+    }
+
+    .sparkle:nth-child(2) {
+        top: 35px;
+        left: -60px;
+        animation-delay: 0.5s;
+        background: #FFD700;
+        transform: rotate(-25deg);
+    }
+
+    .sparkle:nth-child(3) {
+        top: -25px;
+        right: -50px;
+        animation-delay: 1s;
+        background: #00CED1;
+        transform: rotate(45deg);
+    }
+
+    .sparkle:nth-child(4) {
+        top: 35px;
+        right: -60px;
+        animation-delay: 1.5s;
+        background: #E6B3FF;
+        transform: rotate(-15deg);
+    }
+
+    @@keyframes confettiFallMascot {
+        0% {
+            transform: translateY(0px) rotate(0deg);
+            opacity: 0;
+        }
+        20% {
+            opacity: 1;
+        }
+        50% {
+            transform: translateY(30px) rotate(180deg);
+            opacity: 1;
+        }
+        80% {
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(0px) rotate(360deg);
+            opacity: 0;
+        }
+    }
+</style>

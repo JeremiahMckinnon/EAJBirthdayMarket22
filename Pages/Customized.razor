@@ -1,0 +1,298 @@
+@page "/customized"
+@inject NavigationManager NavigationManager
+@inject PointsService PointsService
+
+<PageTitle>Customize Your Treat</PageTitle>
+
+<div class="page-container">
+    <div class="header-wrapper">
+        <PageHeader Title="Customize" />
+    </div>
+
+    <ChatBubble
+        Title="Personalize Your Treat"
+        Message="Here are some optional ways to personalize your Sweet Treat—making your birthday uniquely yours! Please make your customizations, then click Next to continue."
+        AudioFile="/audio/customization_sweet_treat.mp3" />
+
+    <div class="customization-section">
+        <div class="custom-group">
+            <label class="custom-label">Child's Name (Optional)</label>
+            <input type="text" class="name-input" @bind="childName" placeholder="Enter name here..." />
+        </div>
+
+        <div class="custom-group">
+            <label class="custom-label">Select Colors (Optional - Up to 3)</label>
+            <div class="color-grid">
+                @foreach (var color in availableColors)
+                {
+                    <div class="color-option @(IsColorSelected(color) ? "selected" : "")"
+                         @onclick="() => ToggleColor(color)">
+                        <div class="color-preview" style="background-color: @GetColorCode(color)"></div>
+                        <span class="color-name">@color</span>
+                    </div>
+                }
+            </div>
+            @if (selectedColors.Count > 0)
+            {
+                <div class="selected-colors">
+                    Selected: @string.Join(", ", selectedColors)
+                </div>
+            }
+        </div>
+    </div>
+
+    @if (showError)
+    {
+        <div class="error-message">
+            You can only select up to 3 colors!
+        </div>
+    }
+
+    <div class="navigation-buttons">
+        <button class="nav-button back-button" @onclick="NavigateBack">
+            Back
+        </button>
+        <button class="nav-button next-button" @onclick="NavigateNext">
+            Next
+        </button>
+    </div>
+</div>
+
+@code {
+    private string childName = "";
+    private List<string> selectedColors = new List<string>();
+    private bool showError = false;
+
+    private readonly List<string> availableColors = new List<string>
+    {
+        "Black", "Brown", "Red", "Yellow", "Purple",
+        "Pink", "Green", "White", "Orange", "Blue"
+    };
+
+    private void ToggleColor(string color)
+    {
+        if (selectedColors.Contains(color))
+        {
+            selectedColors.Remove(color);
+            showError = false;
+        }
+        else if (selectedColors.Count < 3)
+        {
+            selectedColors.Add(color);
+            showError = false;
+        }
+        else
+        {
+            showError = true;
+        }
+    }
+
+    private bool IsColorSelected(string color)
+    {
+        return selectedColors.Contains(color);
+    }
+
+    private string GetColorCode(string colorName)
+    {
+        return colorName.ToLower() switch
+        {
+            "black" => "#000000",
+            "brown" => "#8B4513",
+            "red" => "#FF0000",
+            "yellow" => "#FFD700",
+            "purple" => "#800080",
+            "pink" => "#FFC0CB",
+            "green" => "#00FF00",
+            "white" => "#FFFFFF",
+            "orange" => "#FFA500",
+            "blue" => "#0000FF",
+            _ => "#808080"
+        };
+    }
+
+    private void NavigateBack()
+    {
+        NavigationManager.NavigateTo("/sweet-treats");
+    }
+
+    private void NavigateNext()
+    {
+        // No points deducted for customization
+        NavigationManager.NavigateTo("/gifts");
+    }
+}
+
+<style>
+    .page-container {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .header-wrapper {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .customization-section {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin: 30px 0;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .custom-group {
+        margin-bottom: 30px;
+    }
+
+    .custom-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .custom-label {
+        display: block;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+    }
+
+    .name-input {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .name-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .color-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 15px;
+    }
+
+    .color-option {
+        background: #f5f5f5;
+        border: 3px solid transparent;
+        border-radius: 10px;
+        padding: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+
+    .color-option:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .color-option.selected {
+        border-color: #f093fb;
+        background: white;
+        box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+    }
+
+    .color-preview {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin: 0 auto 8px;
+        border: 2px solid #e0e0e0;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .color-name {
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.9rem;
+        color: #555;
+        display: block;
+    }
+
+    .selected-colors {
+        margin-top: 15px;
+        padding: 10px;
+        background: rgba(102, 126, 234, 0.1);
+        border-radius: 8px;
+        font-family: 'Poppins', sans-serif;
+        color: #667eea;
+        font-weight: 500;
+    }
+
+    .error-message {
+        background: #ffe4e4;
+        color: #d32f2f;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 20px 0;
+        text-align: center;
+        font-family: 'Poppins', sans-serif;
+        animation: shake 0.5s;
+    }
+
+    @@keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+        20%, 40%, 60%, 80% { transform: translateX(10px); }
+    }
+
+    .navigation-buttons {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 40px;
+        gap: 20px;
+    }
+
+    .nav-button {
+        padding: 15px 40px;
+        font-size: 1.1rem;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .back-button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .back-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .next-button {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        flex-grow: 1;
+        max-width: 300px;
+    }
+
+    .next-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(17, 153, 142, 0.4);
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>

@@ -1,0 +1,305 @@
+@page "/sweet-treats"
+@inject NavigationManager NavigationManager
+@inject PointsService PointsService
+
+<PageTitle>Sweet Treats</PageTitle>
+
+<div class="page-container">
+    <div class="header-wrapper">
+        <PageHeader Title="Sweet Treats" />
+    </div>
+
+    <ChatBubble
+        Title="Sweet Treat Time!"
+        Message="It's Sweet Treat Time! Please select a sweet treat, then click Next to customize it."
+        AudioFile="/audio/Sweet_treats_page.mp3" />
+
+    <div class="allergen-warning">
+        <span class="warning-icon">⚠️</span>
+        <div class="warning-content">
+            <strong>IMPORTANT:</strong> Menu items are prepared in a kitchen that uses wheat, gluten, eggs,
+            peanuts, tree nuts, and milk. If you have restrictions on any of these ingredients,
+            please ask your agency to contact us or select the gift card option.
+        </div>
+    </div>
+
+    <div class="treats-grid">
+        @foreach (var treat in treats)
+        {
+            <div class="treat-option @(selectedTreat == treat.Id ? "selected" : "")"
+                 @onclick="() => SelectTreat(treat.Id, treat.Points)">
+                <div class="treat-name">@treat.Name</div>
+                <div class="treat-points">@treat.Points pts</div>
+            </div>
+        }
+    </div>
+
+    @if (showError)
+    {
+        <div class="error-message">
+            @errorMessage
+        </div>
+    }
+
+    <div class="navigation-buttons">
+        <button class="nav-button back-button" @onclick="NavigateBack">
+            Back
+        </button>
+        <button class="nav-button next-button" disabled="@(!CanProceed())" @onclick="NavigateNext">
+            Next
+        </button>
+    </div>
+</div>
+
+@code {
+    private class Treat
+    {
+        public string Id { get; set; } = "";
+        public string Name { get; set; } = "";
+        public int Points { get; set; }
+    }
+
+    private readonly List<Treat> treats = new List<Treat>
+    {
+        new Treat { Id = "cookies-mm", Name = "Cookies - M&M", Points = 25 },
+        new Treat { Id = "choc-cake-choc", Name = "Chocolate Cake & Chocolate Frosting", Points = 35 },
+        new Treat { Id = "choc-cake-van", Name = "Chocolate Cake & Vanilla Frosting", Points = 35 },
+        new Treat { Id = "chip-cookie-van", Name = "Chocolate Chip Cookie Cake & Vanilla Frosting", Points = 40 },
+        new Treat { Id = "chip-cookie-choc", Name = "Chocolate Chip Cookie Cake & Chocolate Frosting", Points = 40 },
+        new Treat { Id = "cookies-brownie", Name = "Cookies - Brownie", Points = 25 },
+        new Treat { Id = "cookies-chip", Name = "Cookies - Chocolate Chip", Points = 20 },
+        new Treat { Id = "cookies-sugar", Name = "Cookies - Sugar", Points = 20 },
+        new Treat { Id = "dairy-free", Name = "Dairy-free Cake & Vanilla Frosting", Points = 35 },
+        new Treat { Id = "marble-van", Name = "Marble Cake & Vanilla Frosting", Points = 35 },
+        new Treat { Id = "marble-choc", Name = "Marble Chocolate & Chocolate Frosting", Points = 35 },
+        new Treat { Id = "nut-allergy", Name = "NUT ALLERGY - NEEDS GIFT CARD", Points = 50 },
+        new Treat { Id = "white-choc", Name = "White Cake & Chocolate Frosting", Points = 35 },
+        new Treat { Id = "white-van", Name = "White Cake & Vanilla Frosting", Points = 35 },
+        new Treat { Id = "gift-card", Name = "Gift Card", Points = 50 }
+    };
+
+    private string selectedTreat = "";
+    private bool showError = false;
+    private string errorMessage = "";
+
+    private void SelectTreat(string treatId, int cost)
+    {
+        if (!PointsService.HasEnoughPoints(cost) && selectedTreat != treatId)
+        {
+            showError = true;
+            errorMessage = $"Not enough points! You need {cost} points for this treat.";
+            return;
+        }
+
+        if (selectedTreat == treatId)
+        {
+            // Deselect
+            selectedTreat = "";
+            PointsService.RefundCategory("sweetTreat");
+        }
+        else
+        {
+            selectedTreat = treatId;
+            PointsService.UpdateSelection("sweetTreat", cost);
+        }
+        showError = false;
+    }
+
+    private bool CanProceed()
+    {
+        return !string.IsNullOrEmpty(selectedTreat);
+    }
+
+    private void NavigateBack()
+    {
+        // Refund points if leaving page
+        if (!string.IsNullOrEmpty(selectedTreat))
+        {
+            PointsService.RefundCategory("sweetTreat");
+        }
+        NavigationManager.NavigateTo("/books");
+    }
+
+    private void NavigateNext()
+    {
+        if (CanProceed())
+        {
+            NavigationManager.NavigateTo("/customized");
+        }
+        else
+        {
+            showError = true;
+            errorMessage = "Please select a sweet treat before continuing!";
+        }
+    }
+}
+
+<style>
+    .page-container {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .header-wrapper {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .allergen-warning {
+        background: #fff3cd;
+        border: 3px solid #ff9800;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px 0 30px;
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+        animation: pulse 2s infinite;
+    }
+
+    @@keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.02);
+        }
+    }
+
+    .warning-icon {
+        font-size: 2rem;
+        flex-shrink: 0;
+    }
+
+    .warning-content {
+        font-family: 'Poppins', sans-serif;
+        color: #856404;
+        line-height: 1.6;
+    }
+
+    .warning-content strong {
+        color: #ff6b35;
+        font-weight: 600;
+    }
+
+    .treats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 15px;
+        margin: 30px 0;
+    }
+
+    .treat-option {
+        background: white;
+        border: 3px solid transparent;
+        border-radius: 12px;
+        padding: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .treat-option:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .treat-option.selected {
+        border-color: #f093fb;
+        background: linear-gradient(135deg, rgba(240, 147, 251, 0.1) 0%, rgba(245, 87, 108, 0.1) 100%);
+    }
+
+    .treat-name {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+        color: #333;
+        font-size: 0.95rem;
+    }
+
+    .treat-points {
+        font-family: 'Poppins', sans-serif;
+        color: #667eea;
+        font-weight: 600;
+        background: rgba(102, 126, 234, 0.1);
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+
+    .error-message {
+        background: #ffe4e4;
+        color: #d32f2f;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 20px 0;
+        text-align: center;
+        font-family: 'Poppins', sans-serif;
+        animation: shake 0.5s;
+    }
+
+    @@keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+        20%, 40%, 60%, 80% { transform: translateX(10px); }
+    }
+
+    .navigation-buttons {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 40px;
+        gap: 20px;
+    }
+
+    .nav-button {
+        padding: 15px 40px;
+        font-size: 1.1rem;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .back-button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .back-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .next-button {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        flex-grow: 1;
+        max-width: 300px;
+    }
+
+    .next-button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(17, 153, 142, 0.4);
+    }
+
+    .next-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>

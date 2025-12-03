@@ -1,0 +1,91 @@
+@inherits LayoutComponentBase
+@inject PointsService PointsService
+@implements IDisposable
+
+<div class="page">
+    <div class="points-badge">
+        <span class="points-label">Points Remaining:</span>
+        <span class="points-value">@PointsService.CurrentPoints / 500</span>
+    </div>
+
+    <main>
+        @Body
+    </main>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        PointsService.OnPointsChanged += UpdateUI;
+    }
+
+    private void UpdateUI()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        PointsService.OnPointsChanged -= UpdateUI;
+    }
+}
+
+<style>
+    .page {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background-image: url('/images/background.png');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+
+    .points-badge {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 50px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideIn 0.5s ease-out;
+    }
+
+    @@keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    .points-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+
+    .points-value {
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+
+    main {
+        flex: 1;
+        padding: 40px;
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+    }
+</style>

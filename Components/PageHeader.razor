@@ -1,0 +1,59 @@
+<div class="page-header-banner">
+    <span class="header-text">@Title</span>
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = string.Empty;
+}
+
+<style>
+    .page-header-banner {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        border: 5px solid #000;
+        border-radius: 25px;
+        padding: 20px 40px;
+        margin: 0 auto 30px;
+        display: inline-block;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        animation: headerPulse 2s ease-in-out infinite;
+        text-align: center;
+    }
+
+    .header-text {
+        font-family: 'Pacifico', cursive;
+        font-size: 2rem;
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        display: block;
+    }
+
+    @@keyframes headerPulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.02);
+        }
+    }
+
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .page-header-banner {
+            padding: 15px 25px;
+        }
+
+        .header-text {
+            font-size: 1.5rem;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .page-header-banner {
+            padding: 12px 20px;
+        }
+
+        .header-text {
+            font-size: 1.2rem;
+        }
+    }
+</style>

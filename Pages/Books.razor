@@ -1,0 +1,323 @@
+@page "/books"
+@inject NavigationManager NavigationManager
+@inject PointsService PointsService
+
+<PageTitle>Books</PageTitle>
+
+<div class="page-container">
+    <div class="header-wrapper">
+        <PageHeader Title="Books" />
+    </div>
+
+    <ChatBubble
+        Title="Book Selection"
+        Message="Now let's pick a book! Reading is fun and fundamental, my dear friend. Please select a book, then click Next to continue."
+        AudioFile="/audio/books_page.mp3" />
+
+    <div class="tiers-container">
+        <!-- Tier 1: Picture Books -->
+        <div class="tier-section">
+            <div class="tier-header tier-1">
+                <h3>Tier 1: Picture Books</h3>
+                <span class="tier-points">15 points</span>
+            </div>
+            <div class="tier-options">
+                <div class="book-option @(selectedBook == "rhyming" ? "selected" : "")"
+                     @onclick='() => SelectBook("rhyming", 15)'>
+                    <span class="book-name">Rhyming Stories</span>
+                </div>
+                <div class="book-option @(selectedBook == "animal" ? "selected" : "")"
+                     @onclick='() => SelectBook("animal", 15)'>
+                    <span class="book-name">Animal Tales</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tier 2: Chapter Books -->
+        <div class="tier-section">
+            <div class="tier-header tier-2">
+                <h3>Tier 2: Chapter Books</h3>
+                <span class="tier-points">20 points</span>
+            </div>
+            <div class="tier-options">
+                <div class="book-option @(selectedBook == "suspense" ? "selected" : "")"
+                     @onclick='() => SelectBook("suspense", 20)'>
+                    <span class="book-name">Suspense</span>
+                </div>
+                <div class="book-option @(selectedBook == "adventure" ? "selected" : "")"
+                     @onclick='() => SelectBook("adventure", 20)'>
+                    <span class="book-name">Adventure</span>
+                </div>
+                <div class="book-option @(selectedBook == "animation" ? "selected" : "")"
+                     @onclick='() => SelectBook("animation", 20)'>
+                    <span class="book-name">Animation</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tier 3: Teen Reads -->
+        <div class="tier-section">
+            <div class="tier-header tier-3">
+                <h3>Tier 3: Teen Reads</h3>
+                <span class="tier-points">25 points</span>
+            </div>
+            <div class="tier-options">
+                <div class="book-option @(selectedBook == "comedy" ? "selected" : "")"
+                     @onclick='() => SelectBook("comedy", 25)'>
+                    <span class="book-name">Comedy</span>
+                </div>
+                <div class="book-option @(selectedBook == "friendship" ? "selected" : "")"
+                     @onclick='() => SelectBook("friendship", 25)'>
+                    <span class="book-name">Friendship</span>
+                </div>
+                <div class="book-option @(selectedBook == "romance" ? "selected" : "")"
+                     @onclick='() => SelectBook("romance", 25)'>
+                    <span class="book-name">Romance</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (showError)
+    {
+        <div class="error-message">
+            @errorMessage
+        </div>
+    }
+
+    <div class="navigation-buttons">
+        <button class="nav-button back-button" @onclick="NavigateBack">
+            Back
+        </button>
+        <button class="nav-button next-button" disabled="@(!CanProceed())" @onclick="NavigateNext">
+            Next
+        </button>
+    </div>
+</div>
+
+@code {
+    private string selectedBook = "";
+    private bool showError = false;
+    private string errorMessage = "";
+
+    private void SelectBook(string bookId, int cost)
+    {
+        if (!PointsService.HasEnoughPoints(cost) && selectedBook != bookId)
+        {
+            showError = true;
+            errorMessage = $"Not enough points! You need {cost} points for this book.";
+            return;
+        }
+
+        if (selectedBook == bookId)
+        {
+            // Deselect
+            selectedBook = "";
+            PointsService.RefundCategory("book");
+        }
+        else
+        {
+            selectedBook = bookId;
+            PointsService.UpdateSelection("book", cost);
+        }
+        showError = false;
+    }
+
+    private bool CanProceed()
+    {
+        return !string.IsNullOrEmpty(selectedBook);
+    }
+
+    private void NavigateBack()
+    {
+        // Refund points if leaving page
+        if (!string.IsNullOrEmpty(selectedBook))
+        {
+            PointsService.RefundCategory("book");
+        }
+        NavigationManager.NavigateTo("/birthday-cards");
+    }
+
+    private void NavigateNext()
+    {
+        if (CanProceed())
+        {
+            NavigationManager.NavigateTo("/sweet-treats");
+        }
+        else
+        {
+            showError = true;
+            errorMessage = "Please select a book before continuing!";
+        }
+    }
+}
+
+<style>
+    .page-container {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .header-wrapper {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .tiers-container {
+        margin: 30px 0;
+    }
+
+    .tier-section {
+        margin-bottom: 30px;
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .tier-header {
+        padding: 15px 20px;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .tier-header h3 {
+        margin: 0;
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
+
+    .tier-points {
+        background: rgba(255, 255, 255, 0.3);
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+
+    .tier-1 {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .tier-2 {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .tier-3 {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+
+    .tier-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        padding: 20px;
+    }
+
+    .book-option {
+        flex: 1;
+        min-width: 150px;
+        padding: 15px;
+        background: #f5f5f5;
+        border: 3px solid transparent;
+        border-radius: 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .book-option:hover {
+        background: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .book-option.selected {
+        border-color: #f093fb;
+        background: white;
+        box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+    }
+
+    .book-name {
+        font-weight: 500;
+        color: #333;
+        display: block;
+    }
+
+    .error-message {
+        background: #ffe4e4;
+        color: #d32f2f;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 20px 0;
+        text-align: center;
+        font-family: 'Poppins', sans-serif;
+        animation: shake 0.5s;
+    }
+
+    @@keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+        20%, 40%, 60%, 80% { transform: translateX(10px); }
+    }
+
+    .navigation-buttons {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 40px;
+        gap: 20px;
+    }
+
+    .nav-button {
+        padding: 15px 40px;
+        font-size: 1.1rem;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .back-button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .back-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .next-button {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        flex-grow: 1;
+        max-width: 300px;
+    }
+
+    .next-button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(17, 153, 142, 0.4);
+    }
+
+    .next-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>

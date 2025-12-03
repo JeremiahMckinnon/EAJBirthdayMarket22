@@ -1,0 +1,85 @@
+@page "/"
+@inject NavigationManager NavigationManager
+
+<PageTitle>Birthday Market - Welcome</PageTitle>
+
+<div class="welcome-container">
+    <div class="welcome-content">
+        @* <PageHeader Title="Welcome to Birthday Market" /> *@
+    </div>
+    <button class="start-button" 
+        @onclick="NavigateToIntro">
+        START
+    </button>
+</div>
+
+@code {
+    private void NavigateToIntro()
+    {
+        NavigationManager.NavigateTo("/intro");
+    }
+}
+
+<style>
+    .welcome-container {
+        position: relative;
+        min-height: 80vh;
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    .welcome-content {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 40px;
+    }
+
+    .start-button {
+        position: absolute;
+        bottom: 0;
+        right: 0.1rem;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        border: none;
+        padding: 20px 60px;
+        font-size: 1.8rem;
+        font-family: 'Pacifico', cursive;
+        border-radius: 50px;
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(240, 147, 251, 0.4);
+        transition: all 0.3s ease;
+        animation: bounceIn 1s ease-out;
+    }
+
+    .start-button:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(240, 147, 251, 0.6);
+    }
+
+    @@keyframes bounceIn {
+        0% {
+            opacity: 0;
+            transform: scale(0.3);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+        70% {
+            transform: scale(0.95);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+</style>

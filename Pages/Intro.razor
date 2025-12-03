@@ -1,0 +1,140 @@
+@page "/intro"
+@inject NavigationManager NavigationManager
+
+<PageTitle>Meet Mr. B-Day</PageTitle>
+
+<div class="intro-container">
+    <div class="header-wrapper">
+        <PageHeader Title="Meet Mr. B-Day" />
+    </div>
+
+    <div class="chat-with-icons">
+        <ChatBubble
+            Title="Welcome!"
+            Message="Hi my dear friend I am Mr. B-Day! I'm here to help you make your birthday selections. You'll choose a birthday card, a book, a sweet treat, and your special gifts! We'll be using our points system to shop, so please remember to make a selection before continuing. Click Start to begin."
+            AudioFile="/audio/Meet_mr_bday_intro.mp3" />
+
+        <div class="floating-icons">
+            <img src="/images/present-box-icon.png" alt="Birthday Cards" class="floating-icon" style="animation-delay: 0s;" />
+            <img src="/images/gifts-box-icon.png" alt="Gifts" class="floating-icon" style="animation-delay: 0.2s;" />
+            <img src="/images/books-icon.png" alt="Books" class="floating-icon" style="animation-delay: 0.4s;" />
+            <img src="/images/gift-card-icon.png" alt="Gift Cards" class="floating-icon" style="animation-delay: 0.6s;" />
+            <img src="/images/treats-icon.png" alt="Treats" class="floating-icon" style="animation-delay: 0.8s;" />
+        </div>
+    </div>
+
+    <div class="navigation-buttons">
+        <button class="nav-button back-button" @onclick="NavigateBack">
+            Back
+        </button>
+        <button class="nav-button next-button" @onclick="NavigateNext">
+            Start Shopping
+        </button>
+    </div>
+</div>
+
+@code {
+    private void NavigateBack()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+
+    private void NavigateNext()
+    {
+        NavigationManager.NavigateTo("/birthday-cards");
+    }
+}
+
+<style>
+    .intro-container {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .header-wrapper {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .navigation-buttons {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 40px;
+        gap: 20px;
+    }
+
+    .nav-button {
+        padding: 15px 40px;
+        font-size: 1.1rem;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .back-button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .back-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .next-button {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        flex-grow: 1;
+        max-width: 300px;
+    }
+
+    .next-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(17, 153, 142, 0.4);
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .chat-with-icons {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 30px;
+    }
+
+    .floating-icons {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        align-items: center;
+    }
+
+    .floating-icon {
+        width: 125px;
+        height: 125px;
+        object-fit: contain;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @@keyframes float {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+</style>

@@ -1,0 +1,297 @@
+@page "/survey"
+@inject NavigationManager NavigationManager
+
+<PageTitle>Feedback Survey</PageTitle>
+
+<div class="page-container">
+    <div class="header-wrapper">
+        <PageHeader Title="Survey" />
+    </div>
+
+    <ChatBubble
+        Title="Your Feedback"
+        Message="We'd love to hear your feedback! Please tell us about your experience."
+        AudioFile="/audio/survey_happy_robot_loud.mp3" />
+
+    <div class="survey-container">
+        <!-- Question 1 -->
+        <div class="survey-question">
+            <h3>1. How was your experience?</h3>
+            <div class="answer-options">
+                <div class="answer-option @(q1Answer == "Amazing" ? "selected" : "")"
+                     @onclick='() => SelectQ1("Amazing")'>
+                    Amazing
+                </div>
+                <div class="answer-option @(q1Answer == "Good" ? "selected" : "")"
+                     @onclick='() => SelectQ1("Good")'>
+                    Good
+                </div>
+                <div class="answer-option @(q1Answer == "Fair" ? "selected" : "")"
+                     @onclick='() => SelectQ1("Fair")'>
+                    Fair
+                </div>
+                <div class="answer-option @(q1Answer == "Needs Improvement" ? "selected" : "")"
+                     @onclick='() => SelectQ1("Needs Improvement")'>
+                    Needs Improvement
+                </div>
+            </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="survey-question">
+            <h3>2. How did you feel during the experience?</h3>
+            <div class="answer-options">
+                <div class="answer-option @(q2Answer == "Excited" ? "selected" : "")"
+                     @onclick='() => SelectQ2("Excited")'>
+                    Excited
+                </div>
+                <div class="answer-option @(q2Answer == "Happy" ? "selected" : "")"
+                     @onclick='() => SelectQ2("Happy")'>
+                    Happy
+                </div>
+                <div class="answer-option @(q2Answer == "Calm" ? "selected" : "")"
+                     @onclick='() => SelectQ2("Calm")'>
+                    Calm
+                </div>
+                <div class="answer-option @(q2Answer == "Confused" ? "selected" : "")"
+                     @onclick='() => SelectQ2("Confused")'>
+                    Confused
+                </div>
+                <div class="answer-option @(q2Answer == "Overwhelmed" ? "selected" : "")"
+                     @onclick='() => SelectQ2("Overwhelmed")'>
+                    Overwhelmed
+                </div>
+            </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="survey-question">
+            <h3>3. What do you think about Mr. B-Day?</h3>
+            <div class="answer-options">
+                <div class="answer-option @(q3Answer == "Fun" ? "selected" : "")"
+                     @onclick='() => SelectQ3("Fun")'>
+                    He's fun and entertaining
+                </div>
+                <div class="answer-option @(q3Answer == "Helpful" ? "selected" : "")"
+                     @onclick='() => SelectQ3("Helpful")'>
+                    He's helpful
+                </div>
+                <div class="answer-option @(q3Answer == "Development" ? "selected" : "")"
+                     @onclick='() => SelectQ3("Development")'>
+                    He needs more development
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (showError)
+    {
+        <div class="error-message">
+            Please answer all questions before submitting!
+        </div>
+    }
+
+    <div class="navigation-buttons">
+        <button class="nav-button back-button" @onclick="NavigateBack">
+            Back
+        </button>
+        <button class="nav-button submit-button" disabled="@(!CanProceed())" @onclick="SubmitSurvey">
+            Submit Survey
+        </button>
+    </div>
+</div>
+
+@code {
+    private string q1Answer = "";
+    private string q2Answer = "";
+    private string q3Answer = "";
+    private bool showError = false;
+
+    private void SelectQ1(string answer)
+    {
+        q1Answer = answer;
+        showError = false;
+    }
+
+    private void SelectQ2(string answer)
+    {
+        q2Answer = answer;
+        showError = false;
+    }
+
+    private void SelectQ3(string answer)
+    {
+        q3Answer = answer;
+        showError = false;
+    }
+
+    private bool CanProceed()
+    {
+        return !string.IsNullOrEmpty(q1Answer) &&
+               !string.IsNullOrEmpty(q2Answer) &&
+               !string.IsNullOrEmpty(q3Answer);
+    }
+
+    private void NavigateBack()
+    {
+        NavigationManager.NavigateTo("/gifts");
+    }
+
+    private void SubmitSurvey()
+    {
+        if (CanProceed())
+        {
+            // Survey responses would be saved here
+            NavigationManager.NavigateTo("/congratulations");
+        }
+        else
+        {
+            showError = true;
+        }
+    }
+}
+
+<style>
+    .page-container {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .header-wrapper {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .survey-container {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin: 30px 0;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .survey-question {
+        margin-bottom: 35px;
+        padding-bottom: 35px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .survey-question:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .survey-question h3 {
+        font-family: 'Poppins', sans-serif;
+        color: #333;
+        margin-bottom: 20px;
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+
+    .answer-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .answer-option {
+        padding: 12px 24px;
+        background: #f5f5f5;
+        border: 3px solid transparent;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+        color: #555;
+    }
+
+    .answer-option:hover {
+        background: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .answer-option.selected {
+        border-color: #f093fb;
+        background: linear-gradient(135deg, rgba(240, 147, 251, 0.1) 0%, rgba(245, 87, 108, 0.1) 100%);
+        color: #333;
+        box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+    }
+
+    .error-message {
+        background: #ffe4e4;
+        color: #d32f2f;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 20px 0;
+        text-align: center;
+        font-family: 'Poppins', sans-serif;
+        animation: shake 0.5s;
+    }
+
+    @@keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+        20%, 40%, 60%, 80% { transform: translateX(10px); }
+    }
+
+    .navigation-buttons {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 40px;
+        gap: 20px;
+    }
+
+    .nav-button {
+        padding: 15px 40px;
+        font-size: 1.1rem;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .back-button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .back-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .submit-button {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        flex-grow: 1;
+        max-width: 300px;
+    }
+
+    .submit-button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(17, 153, 142, 0.4);
+    }
+
+    .submit-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>

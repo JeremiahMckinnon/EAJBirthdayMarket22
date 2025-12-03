@@ -1,0 +1,368 @@
+@page "/gifts"
+@inject NavigationManager NavigationManager
+@inject PointsService PointsService
+
+<PageTitle>Gift Selection</PageTitle>
+
+<div class="page-container">
+    <div class="header-wrapper">
+        <PageHeader Title="Gifts" />
+    </div>
+
+    <ChatBubble
+        Title="Special Gifts!"
+        Message="We saved the best for last—let's pick a special gift (or gifts) for your birthday! Please select at least one gift, then click Next to continue."
+        AudioFile="/audio/gifts_page_toys.mp3" />
+
+    <div class="tiers-container">
+        <!-- Tier 1: Early Childhood -->
+        <div class="tier-section">
+            <div class="tier-header tier-1">
+                <h3>Tier 1: Early Childhood Ages 0-6</h3>
+                <span class="tier-points">50 points</span>
+            </div>
+            <div class="tier-options">
+                <div class="gift-option @(IsGiftSelected("ages-0-2") ? "selected" : "")"
+                     @onclick='() => ToggleGift("ages-0-2", 50)'>
+                    <span class="gift-name">Ages 0-2 Gift Set</span>
+                </div>
+                <div class="gift-option @(IsGiftSelected("ages-2-4") ? "selected" : "")"
+                     @onclick='() => ToggleGift("ages-2-4", 50)'>
+                    <span class="gift-name">Ages 2-4 Gift Set</span>
+                </div>
+                <div class="gift-option @(IsGiftSelected("ages-4-6") ? "selected" : "")"
+                     @onclick='() => ToggleGift("ages-4-6", 50)'>
+                    <span class="gift-name">Ages 4-6 Gift Set</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tier 2: Youth -->
+        <div class="tier-section">
+            <div class="tier-header tier-2">
+                <h3>Tier 2: Youth Ages 5-12</h3>
+                <span class="tier-points">75 points</span>
+            </div>
+            <div class="tier-options">
+                <div class="gift-option @(IsGiftSelected("youth-5-12") ? "selected" : "")"
+                     @onclick='() => ToggleGift("youth-5-12", 75)'>
+                    <span class="gift-name">Youth Gift Set (Ages 5-12)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tier 3: Teens -->
+        <div class="tier-section">
+            <div class="tier-header tier-3">
+                <h3>Tier 3: Teens Ages 11-18</h3>
+                <span class="tier-points">100 points</span>
+            </div>
+            <div class="tier-options">
+                <div class="gift-option @(IsGiftSelected("teen-11-18") ? "selected" : "")"
+                     @onclick='() => ToggleGift("teen-11-18", 100)'>
+                    <span class="gift-name">Teen Gift Set (Ages 11-18)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (selectedGifts.Count > 0)
+    {
+        <div class="selection-summary">
+            <strong>Selected Gifts:</strong> @string.Join(", ", selectedGifts.Select(g => g.Key))
+            <br />
+            <strong>Total Points for Gifts:</strong> @selectedGifts.Values.Sum() points
+        </div>
+    }
+
+    @if (showError)
+    {
+        <div class="error-message">
+            @errorMessage
+        </div>
+    }
+
+    <div class="navigation-buttons">
+        <button class="nav-button back-button" @onclick="NavigateBack">
+            Back
+        </button>
+        <button class="nav-button next-button" disabled="@(!CanProceed())" @onclick="NavigateNext">
+            Next
+        </button>
+    </div>
+</div>
+
+@code {
+    private Dictionary<string, int> selectedGifts = new Dictionary<string, int>();
+    private bool showError = false;
+    private string errorMessage = "";
+    private int previousTotalPoints = 0;
+
+    protected override void OnInitialized()
+    {
+        // Get any previously selected gifts
+        previousTotalPoints = PointsService.GetSelectionPoints("gifts");
+    }
+
+    private void ToggleGift(string giftId, int cost)
+    {
+        if (selectedGifts.ContainsKey(giftId))
+        {
+            // Remove gift
+            selectedGifts.Remove(giftId);
+        }
+        else
+        {
+            // Check if we have enough points for this additional gift
+            int currentTotal = selectedGifts.Values.Sum();
+            int newTotal = currentTotal + cost;
+
+            // First, refund the old selection
+            if (previousTotalPoints > 0)
+            {
+                PointsService.AddPoints(previousTotalPoints);
+            }
+
+            // Check if we can afford the new total
+            if (PointsService.HasEnoughPoints(newTotal))
+            {
+                selectedGifts[giftId] = cost;
+                showError = false;
+            }
+            else
+            {
+                showError = true;
+                errorMessage = $"Not enough points! You need {newTotal} points for all selected gifts.";
+                // Re-deduct the previous selection
+                if (previousTotalPoints > 0)
+                {
+                    PointsService.SubtractPoints(previousTotalPoints);
+                }
+                return;
+            }
+
+            // Re-deduct the previous selection
+            if (previousTotalPoints > 0)
+            {
+                PointsService.SubtractPoints(previousTotalPoints);
+            }
+        }
+
+        // Update the points
+        int totalPoints = selectedGifts.Values.Sum();
+        PointsService.UpdateSelection("gifts", totalPoints);
+        previousTotalPoints = totalPoints;
+    }
+
+    private bool IsGiftSelected(string giftId)
+    {
+        return selectedGifts.ContainsKey(giftId);
+    }
+
+    private bool CanProceed()
+    {
+        return selectedGifts.Count > 0;
+    }
+
+    private void NavigateBack()
+    {
+        // Refund points if leaving page
+        if (selectedGifts.Count > 0)
+        {
+            PointsService.RefundCategory("gifts");
+        }
+        NavigationManager.NavigateTo("/customized");
+    }
+
+    private void NavigateNext()
+    {
+        if (CanProceed())
+        {
+            NavigationManager.NavigateTo("/survey");
+        }
+        else
+        {
+            showError = true;
+            errorMessage = "Please select at least one gift before continuing!";
+        }
+    }
+}
+
+<style>
+    .page-container {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .header-wrapper {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .tiers-container {
+        margin: 30px 0;
+    }
+
+    .tier-section {
+        margin-bottom: 30px;
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .tier-header {
+        padding: 15px 20px;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .tier-header h3 {
+        margin: 0;
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
+
+    .tier-points {
+        background: rgba(255, 255, 255, 0.3);
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+
+    .tier-1 {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .tier-2 {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .tier-3 {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+
+    .tier-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        padding: 20px;
+    }
+
+    .gift-option {
+        flex: 1;
+        min-width: 200px;
+        padding: 15px;
+        background: #f5f5f5;
+        border: 3px solid transparent;
+        border-radius: 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .gift-option:hover {
+        background: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .gift-option.selected {
+        border-color: #f093fb;
+        background: white;
+        box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+    }
+
+    .gift-name {
+        font-weight: 500;
+        color: #333;
+        display: block;
+    }
+
+    .selection-summary {
+        background: rgba(102, 126, 234, 0.1);
+        padding: 15px;
+        border-radius: 10px;
+        margin: 20px 0;
+        font-family: 'Poppins', sans-serif;
+        color: #667eea;
+    }
+
+    .error-message {
+        background: #ffe4e4;
+        color: #d32f2f;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 20px 0;
+        text-align: center;
+        font-family: 'Poppins', sans-serif;
+        animation: shake 0.5s;
+    }
+
+    @@keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+        20%, 40%, 60%, 80% { transform: translateX(10px); }
+    }
+
+    .navigation-buttons {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 40px;
+        gap: 20px;
+    }
+
+    .nav-button {
+        padding: 15px 40px;
+        font-size: 1.1rem;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .back-button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .back-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .next-button {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        flex-grow: 1;
+        max-width: 300px;
+    }
+
+    .next-button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(17, 153, 142, 0.4);
+    }
+
+    .next-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
